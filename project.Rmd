@@ -1,0 +1,46 @@
+Practical Machine Learning - project
+========================================================
+
+Let's load training data ...
+```{r cache=TRUE}
+library(caret)
+pml.training <- read.csv("http://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv")
+
+table(complete.cases(pml.training))
+```
+The training data look sparse , so we will use only the numerical properties of which contain the complete data
+
+```{r cache=TRUE}
+colClass <-lapply(pml.training, class)
+colVect =c()
+for(cc in colClass){colVect <- c(colVect,cc)}
+colVect
+colVect <-c()
+for(i in 1:length(colClass)){colVect<-c(colVect,grepl("numeric",colClass[i])&&(!anyNA(pml.training[,i])))}
+colVect[length(colVect)] <- TRUE
+
+train <- pml.training[,colVect]
+head(train)
+```
+build a model 
+```{r cache=TRUE}
+fit.rf <- randomForest(train$classe ~. , data= train)
+fit.rf
+```
+load and select test
+```{r cache=TRUE}
+pml.testing <- read.csv("http://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv")
+test <- pml.testing[,colVect]
+head(test)
+```
+predict test
+```{r}
+rf.pred <- predict(fit.rf, test)
+rf.pred
+
+```
+
+
+
+
+
